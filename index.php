@@ -8,6 +8,8 @@ require_once 'services.php';
 
 @ini_set('magic_quotes_runtime', 0);
 
+
+
 class Download extends Services{
 
 	
@@ -18,18 +20,34 @@ class Download extends Services{
 	
 		// Give it time to check the files
 		set_time_limit(180);
+
+		// If a task has hung the script, error
+		register_shutdown_function(array($this, 'onTimeout'));
+
+		// Set global exception handler
+		set_exception_handler("onException");		
 	
 		// Bump up memory
 		ini_set('memory_limit', '1524M');		
 
 		// POST variables
-		if(isset($_POST['user_id'])) $user_id = $_POST['user_id'];
-		if(isset($_POST['album_id'])) $album_id = $_POST['album_id'];
-		if(isset($_POST['file_ids'])) $file_ids = $_POST['file_ids'];
-		if(isset($_POST['file_id'])) $file_ids = $_POST['file_id'];
-		if(isset($_POST['size'])) $size = $_POST['size'];
-		if(isset($_POST['name'])) $name = $_POST['name'];
-		
+		if(isset($_REQUEST['user_id'])) $user_id = $_REQUEST['user_id'];
+		if(isset($_REQUEST['album_id'])) $album_id = $_REQUEST['album_id'];
+		if(isset($_REQUEST['album_key'])) $album_key = $_REQUEST['album_key'];
+		if(isset($_REQUEST['file_ids'])) $file_ids = $_REQUEST['file_ids'];
+		if(isset($_REQUEST['file_id'])) $file_ids = $_REQUEST['file_id'];
+		if(isset($_REQUEST['size'])) $size = $_REQUEST['size'];
+		if(isset($_REQUEST['name'])) $name = $_REQUEST['name'];
+
+		// Temp fix for new Director
+		// Sometimes the album is loaded in Director
+		if(isset($album_id) && isset($album_key)){
+			
+			$file_ids = $this->db->select("SELECT album_photos FROM albums WHERE album_id = $album_id AND album_key = '$album_key'", 'value');
+
+		}
+
+		/*
 		// GET variables
 		if(isset($_GET['user_id'])) $user_id = $_GET['user_id'];
 		if(isset($_GET['album_id'])) $album_id = $_GET['album_id'];
@@ -37,12 +55,14 @@ class Download extends Services{
 		if(isset($_GET['file_id'])) $file_ids = $_GET['file_id'];
 		if(isset($_GET['size'])) $size = $_GET['size'];
 		if(isset($_GET['name'])) $name = $_GET['name'];		
-		
+		*/
 		if(!isset($user_id)) exit();
 		if(!isset($file_ids)) exit();
 		if(!isset($size)) $size = 'original';
 
-		
+		// Set for debugging
+		$this->db->user_id = $user_id;
+
 		$download_files = array();
 		$download_size = 0;
 		$download_name = '';
@@ -101,27 +121,55 @@ class Download extends Services{
 	
 		// Log the archive in the downloads table
 		$a = array(	'user_id' => $user_id, 
-					'download_filename' => $download_name . "-1", 
+					'download_filename' => $download_name, 
 					'download_filesize' => $download_size, 
 					'download_photos' => $file_ids, 
 					'download_size' => $size, 
 					'xx_download_created' => 'CURRENT_TIMESTAMP');
 					
-		$this->db->insert("downloads", $a, true);
+		$this->download_id = $this->db->insert("downloads", $a, true);
+		$this->download_start = microtime(true);
+		$this->download_status = "Starting";
+		$this->download_complete = false;
 
-		// Allow roughly 3 minutes per mb
-		set_time_limit(0);	
-
-		//if($download_size >= 2147483648) set_time_limit(0);
-
-		// Send out headers
-		$this->sendHeaders($download_name, $download_size);
 
 		// Download zip
-		if($download_type == 'zip') $this->downloadZip($download_files);
-			
+		if($download_type == 'zip'){ 
+
+			// Allow roughly 3 minutes per mb
+			set_time_limit(0);
+
+			// Send out headers
+			$this->sendHeaders($download_name, $download_size);
+
+			$this->downloadZip($download_files);
+
+			$this->download_complete = true;
+
+		}
+
 		// Download file	
-		if($download_type == 'file') $this->downloadFile($download_files[0]);
+		if($download_type == 'file'){ 
+
+
+			$response = array(	'content-type' => 'application/octet-stream',
+        						'content-disposition' => "attachment; filename=$download_name");
+
+			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
+			$link = str_replace('.s3.amazonaws.com', '', $link);
+
+			$this->download_complete = true;
+
+			//echo "$link";
+	    	header("Location: $link");
+
+			//$this->downloadFile($download_files[0]);
+
+		}
+
+		// Let shoutdown function know not to worry
+		
+
 
 	}
 	
@@ -231,6 +279,9 @@ class Download extends Services{
 
 		foreach ($download_files as $current){
 			
+			// Set status to the current name for dubugging
+			$this->download_status = $current['name'];
+
 			if($file = $this->getPhoto($current['bucket'], $current['key'])){
 
 				$current['size'] = filesize($file);
@@ -342,6 +393,57 @@ class Download extends Services{
 
 		return 1;
 	}	
+
+
+	function onTimeout(){
+		
+		// Determine connection status
+		$connection = connection_status();
+		
+		
+			
+		// Look for timeout or abort	
+		if($connection != 0 || $this->download_complete == false){
+					
+			// Determine duration
+			$this->download_duration = microtime(true) - $this->download_start;
+
+			// Log this
+			$this->error('Script Timeout', "Script timeout while downloading $this->download_id\n\nDuration: $this->download_duration\n\nStatus: $this->download_status\n\nConnection: $connection\n\nComplete: $this->download_complete", 0, true);
+		
+		} else {
+			
+			// Update DB to show completed
+			$this->db->update('downloads', array('xx_download_completed' => 'CURRENT_TIMESTAMP'), "download_id = $this->download_id");
+
+		}
+
+		// Terminate db connect
+		$this->db->close();		
+
+	}
+
+	
+	function onException($e) {
+
+
+		// Determine duration
+		$this->download_duration = microtime(true) - $this->download_start;
+
+		// Log this
+		$this->error('Script Error', "Exception while downloading $this->download_id\n\nMessage: ".$e->getMessage() ."\n\nDuration: $this->download_duration\n\nStatus: $this->download_status", 0, true);
+
+
+		// Terminate db connect
+		$this->db->close();	
+
+
+	}
+
+
+
+
+
 	
 }
 	
