@@ -16,16 +16,7 @@ class Download extends Services{
 	function Download(){
 		
 		// Init services
-		parent::__construct('Download');		
-	
-		// Give it time to check the files
-		set_time_limit(180);
-
-		// If a task has hung the script, error
-		register_shutdown_function(array($this, 'onTimeout'));
-
-		// Set global exception handler
-		set_exception_handler("onException");		
+		parent::__construct('Download');				
 	
 		// Bump up memory
 		ini_set('memory_limit', '1524M');		
@@ -39,6 +30,7 @@ class Download extends Services{
 		if(isset($_REQUEST['size'])) $size = $_REQUEST['size'];
 		if(isset($_REQUEST['name'])) $name = $_REQUEST['name'];
 
+
 		// Temp fix for new Director
 		// Sometimes the album is loaded in Director
 		if(isset($album_id) && isset($album_key)){
@@ -46,19 +38,26 @@ class Download extends Services{
 			$file_ids = $this->db->select("SELECT album_photos FROM albums WHERE album_id = $album_id AND album_key = '$album_key'", 'value');
 
 		}
+		
 
-		/*
-		// GET variables
-		if(isset($_GET['user_id'])) $user_id = $_GET['user_id'];
-		if(isset($_GET['album_id'])) $album_id = $_GET['album_id'];
-		if(isset($_GET['file_ids'])) $file_ids = $_GET['file_ids'];
-		if(isset($_GET['file_id'])) $file_ids = $_GET['file_id'];
-		if(isset($_GET['size'])) $size = $_GET['size'];
-		if(isset($_GET['name'])) $name = $_GET['name'];		
-		*/
+
+		// For zips, redirect to IP address so session doesn't expire
+		if(stripos($file_ids, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
+			
+			$location = "http://" . $this->server . "/index.php?" . http_build_query($_REQUEST);
+			header( "HTTP/1.1 303 See Other" );
+			header( "Location: $location" );
+			exit();
+
+
+		}
+
+
+
 		if(!isset($user_id)) exit();
 		if(!isset($file_ids)) exit();
-		if(!isset($size)) $size = 'original';
+		if(!isset($size)) $size = 'original';				
+
 
 		// Set for debugging
 		$this->db->user_id = $user_id;
@@ -131,13 +130,22 @@ class Download extends Services{
 		$this->download_start = microtime(true);
 		$this->download_status = "Starting";
 		$this->download_complete = false;
+		$this->download_name = $download_name;
+
+
 
 
 		// Download zip
 		if($download_type == 'zip'){ 
 
-			// Allow roughly 3 minutes per mb
-			set_time_limit(0);
+			// Allow 24 hours
+			set_time_limit(86400);
+
+			// If a task has hung the script, error
+			register_shutdown_function(array($this, 'onTimeout'));
+
+			// Set global exception handler
+			set_exception_handler(array($this, 'onException'));			
 
 			// Send out headers
 			$this->sendHeaders($download_name, $download_size);
@@ -288,7 +296,7 @@ class Download extends Services{
 				
 	
 			
-				if ($current['name'] == $zip_filename) continue;
+				if ($current['name'] == $this->download_name) continue;
 
 					$timedate = explode(" ", date("Y n j G i s", time()));
 					$timedate = ($timedate[0] - 1980 << 25) | ($timedate[1] << 21) | ($timedate[2] << 16) |
@@ -409,7 +417,7 @@ class Download extends Services{
 			$this->download_duration = microtime(true) - $this->download_start;
 
 			// Log this
-			$this->error('Script Timeout', "Script timeout while downloading $this->download_id\n\nDuration: $this->download_duration\n\nStatus: $this->download_status\n\nConnection: $connection\n\nComplete: $this->download_complete", 0, true);
+			$this->error('Script Timeout', "Script timeout while downloading $this->download_id\n\nDuration: $this->download_duration\n\nStatus: $this->download_status\n\nConnection: $connection\n\nComplete: $this->download_complete", 0, false);
 		
 		} else {
 			

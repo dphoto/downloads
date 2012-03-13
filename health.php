@@ -15,7 +15,7 @@ try{
 	
 	header("HTTP/1.1 200 OK");
 	
-	echo "Everything is OK";
+	echo "Everything is OK here yo";
 
 } catch (Exception $e){
 	
