@@ -199,9 +199,10 @@ class Download extends Services{
 		header("Content-Transfer-Encoding: binary");
 	//	header("Content-Length: $download_size");
 		
+		//$download_size < 2147483648 && 
 		// Apache headers are 32bit - limiting size to 2gb. 
 		// If file is bigger, just don't send final size.
-		if($download_size < 2147483648 && $download_size > 0){
+		if($download_size > 0){
 			
 			header("Content-Length: ". $download_size);
 			
