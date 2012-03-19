@@ -38,7 +38,7 @@ class Download extends Services{
 				$user_id = $download['user_id'];
 				$file_ids = $download['download_photos'];
 				$download_name = $download['download_filename'];
-				$download_type = stripos($download_name, '.zip') ? 'zip' : 'file' ;
+				$download_type = stripos($download_photos, ',') ? 'zip' : 'file' ;
 				$download_files = array();
 				$download_size = 0;
 
@@ -122,8 +122,17 @@ class Download extends Services{
 		}
 		
 		// Allow some padding
-		if($download_type == 'zip') $download_size *= 1.005;
-					
+		if($download_type == 'zip'){ 
+
+			$download_size *= 1.005;
+			$download_name += '.zip';
+
+		} else {
+
+			$download_name = $download_files[0]['name'];
+
+		} 
+
 		$this->download_id = $download_id;//$this->db->insert("downloads", $a, true);
 		$this->download_start = microtime(true);
 		$this->download_status = "Starting";
@@ -131,6 +140,11 @@ class Download extends Services{
 		$this->download_name = $download_name;
 
 
+		$a = array(	'download_size' => $download_size,
+					'download_filename' => $download_name,
+					'xx_download_created' => 'CURRENT_TIMESTAMP');
+
+		$this->db->update('downloads', $a, "download_id = $download_id");
 
 
 		// Download zip
@@ -146,7 +160,7 @@ class Download extends Services{
 			set_exception_handler(array($this, 'onException'));			
 
 			// Send out headers
-			$this->sendHeaders($download_name, $download_size);
+			$this->sendHeaders($download_name . '.zip', $download_size);
 
 			$this->downloadZip($download_files);
 
@@ -157,7 +171,7 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_name = $download_files[0]['name'];
+			
 
 			$response = array(	'content-type' => 'application/octet-stream',
         						'content-disposition' => "attachment; filename=$download_name");
