@@ -22,7 +22,7 @@ class Download extends Services{
 		ini_set('memory_limit', '1524M');		
 
 		// POST variables
-		if(isset($_REQUEST['download_id'])) $download_id = $_REQUEST['download_id'];
+		if(isset($_REQUEST['download_id'])) $download_id = urldecode ( $_REQUEST['download_id'] );
 		//if(isset($_REQUEST['download_key'])) $download_key = $_REQUEST['download_key'];
 
 		$download_key = substr($download_id, stripos($download_id, '-') + 1);
