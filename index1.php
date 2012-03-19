@@ -38,7 +38,7 @@ class Download extends Services{
 				$user_id = $download['user_id'];
 				$file_ids = $download['download_photos'];
 				$download_name = $download['download_filename'];
-				$download_type = stripos($download_photos, ',') ? 'zip' : 'file' ;
+				$download_type = stripos($download_photos, ',') !== false ? 'zip' : 'file' ;
 				$download_files = array();
 				$download_size = 0;
 
