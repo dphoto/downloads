@@ -36,7 +36,7 @@ class Download extends Services{
 
 				$size = $download['download_size'];
 				$user_id = $download['user_id'];
-				$file_ids = $download['download_photos'];
+				$download_photos = $download['download_photos'];
 				$download_name = $download['download_filename'];
 				$download_type = stripos($download_photos, ',') !== false ? 'zip' : 'file' ;
 				$download_files = array();
@@ -82,7 +82,7 @@ class Download extends Services{
 		// Get photo data
 		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id 
 					FROM files
-					WHERE file_id IN ($file_ids) 
+					WHERE file_id IN ($download_photos) 
 					AND user_id = $user_id";
 
 		$result = $this->db->select($query);
