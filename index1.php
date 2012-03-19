@@ -157,6 +157,7 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
+			$download_name = $download_files[0]['name'];
 
 			$response = array(	'content-type' => 'application/octet-stream',
         						'content-disposition' => "attachment; filename=$download_name");
