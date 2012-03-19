@@ -3,8 +3,8 @@
 
 require_once 'services.php';
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 @ini_set('magic_quotes_runtime', 0);
 
@@ -22,27 +22,42 @@ class Download extends Services{
 		ini_set('memory_limit', '1524M');		
 
 		// POST variables
-		if(isset($_REQUEST['user_id'])) $user_id = $_REQUEST['user_id'];
-		if(isset($_REQUEST['album_id'])) $album_id = $_REQUEST['album_id'];
-		if(isset($_REQUEST['album_key'])) $album_key = $_REQUEST['album_key'];
-		if(isset($_REQUEST['file_ids'])) $file_ids = $_REQUEST['file_ids'];
-		if(isset($_REQUEST['file_id'])) $file_ids = $_REQUEST['file_id'];
-		if(isset($_REQUEST['size'])) $size = $_REQUEST['size'];
-		if(isset($_REQUEST['name'])) $name = $_REQUEST['name'];
+		if(isset($_REQUEST['download_id'])) $download_id = urldecode( $_REQUEST['download_id'] );
+		//if(isset($_REQUEST['download_key'])) $download_key = $_REQUEST['download_key'];
 
+		$download_key = substr($download_id, stripos($download_id, '-') + 1);
+		$download_id = substr($download_id, 0, stripos($download_id, '-'));
 
-		// Temp fix for new Director
-		// Sometimes the album is loaded in Director
-		if(isset($album_id) && isset($album_key)){
-			
-			$file_ids = $this->db->select("SELECT album_photos FROM albums WHERE album_id = $album_id AND album_key = '$album_key'", 'value');
+		if(isset($download_id) && isset($download_key)){
+
+			$download = $this->db->select("SELECT * FROM downloads WHERE download_id = $download_id AND download_key = '$download_key'", 'row');
+
+			if(is_array($download)){
+
+				$size = $download['download_size'];
+				$user_id = $download['user_id'];
+				$download_photos = $download['download_photos'];
+				$download_name = $download['download_filename'];
+				$download_type = stripos($download_photos, ',') !== false ? 'zip' : 'file' ;
+				$download_files = array();
+				$download_size = 0;
+
+			} else {
+
+				echo "Incorrect ID";
+				exit();
+
+			}
+
+		} else {
+
+				echo "No ID";
+				exit();
 
 		}
-		
-
 
 		// For zips, redirect to IP address so session doesn't expire
-		if(stripos($file_ids, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
+		if(stripos($download_photos, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
 			
 			$location = "http://" . $this->server . "/index.php?" . http_build_query($_REQUEST);
 			header( "HTTP/1.1 303 See Other" );
@@ -50,26 +65,24 @@ class Download extends Services{
 			exit();
 
 
-		}
+		}		
 
 
-
-		if(!isset($user_id)) exit();
-		if(!isset($file_ids)) exit();
-		if(!isset($size)) $size = 'original';				
+		//if(!isset($user_id)) exit();
+		//if(!isset($file_ids)) exit();
+		//if(!isset($size)) $size = 'original';				
 
 
 		// Set for debugging
 		$this->db->user_id = $user_id;
 
-		$download_files = array();
-		$download_size = 0;
-		$download_name = '';
+
+	//	$download_name = '';
 
 		// Get photo data
 		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id 
 					FROM files
-					WHERE file_id IN ($file_ids) 
+					WHERE file_id IN ($download_photos) 
 					AND user_id = $user_id";
 
 		$result = $this->db->select($query);
@@ -108,31 +121,30 @@ class Download extends Services{
 
 		}
 		
-
-
-		// See download vars
-		$download_type = (isset($album_id) || mysql_num_rows($result) > 1) ? 'zip' : 'file';
-		$download_name = ($download_type == 'zip') ? $name . '.zip' : $download_files[0]['name'];
-		$download_name = $this->cleanString($download_name); 
-
 		// Allow some padding
-		if($download_type == 'zip') $download_size *= 1.005;
-	
-		// Log the archive in the downloads table
-		$a = array(	'user_id' => $user_id, 
-					'download_filename' => $download_name, 
-					'download_filesize' => $download_size, 
-					'download_photos' => $file_ids, 
-					'download_size' => $size, 
-					'xx_download_created' => 'CURRENT_TIMESTAMP');
-					
-		$this->download_id = $this->db->insert("downloads", $a, true);
+		if($download_type == 'zip'){ 
+
+			$download_size *= 1.005;
+			$download_name .= '.zip';
+
+		} else {
+
+			$download_name = $download_files[0]['name'];
+
+		} 
+
+		$this->download_id = $download_id;//$this->db->insert("downloads", $a, true);
 		$this->download_start = microtime(true);
 		$this->download_status = "Starting";
 		$this->download_complete = false;
 		$this->download_name = $download_name;
 
 
+		$a = array(	'download_filesize' => $download_size,
+					'download_filename' => $download_name,
+					'xx_download_created' => 'CURRENT_TIMESTAMP');
+
+		$this->db->update('downloads', $a, "download_id = $download_id");
 
 
 		// Download zip
@@ -159,6 +171,7 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
+			
 
 			$response = array(	'content-type' => 'application/octet-stream',
         						'content-disposition' => "attachment; filename=$download_name");
