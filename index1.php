@@ -140,7 +140,7 @@ class Download extends Services{
 		$this->download_name = $download_name;
 
 
-		$a = array(	'download_size' => $download_size,
+		$a = array(	'download_filesize' => $download_size,
 					'download_filename' => $download_name,
 					'xx_download_created' => 'CURRENT_TIMESTAMP');
 
