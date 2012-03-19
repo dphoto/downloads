@@ -23,10 +23,10 @@ class Download extends Services{
 
 		// POST variables
 		if(isset($_REQUEST['download_id'])) $download_id = $_REQUEST['download_id'];
-		if(isset($_REQUEST['download_key'])) $download_key = $_REQUEST['download_key'];
+		//if(isset($_REQUEST['download_key'])) $download_key = $_REQUEST['download_key'];
 
-
-
+		$download_key = substr($download_id, stripos($download_id, '-') + 1);
+		$download_id = substr($download_id, 0, stripos($download_id, '-'));
 
 		if(isset($download_id) && isset($download_key)){
 
@@ -49,7 +49,12 @@ class Download extends Services{
 
 			}
 
-		} 
+		} else {
+
+				echo "No ID";
+				exit();
+
+		}
 /*
 		// For zips, redirect to IP address so session doesn't expire
 		if(stripos($file_ids, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
