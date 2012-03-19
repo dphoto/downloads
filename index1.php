@@ -39,6 +39,8 @@ class Download extends Services{
 				$file_ids = $download['download_photos'];
 				$download_name = $download['download_filename'];
 				$download_type = stripos($download_name, '.zip') ? 'zip' : 'file' ;
+				$download_files = array();
+				$download_size = 0;
 
 			} else {
 
@@ -61,17 +63,16 @@ class Download extends Services{
 		}		
 
 */
-		if(!isset($user_id)) exit();
-		if(!isset($file_ids)) exit();
-		if(!isset($size)) $size = 'original';				
+		//if(!isset($user_id)) exit();
+		//if(!isset($file_ids)) exit();
+		//if(!isset($size)) $size = 'original';				
 
 
 		// Set for debugging
 		$this->db->user_id = $user_id;
 
-		$download_files = array();
-		$download_size = 0;
-		$download_name = '';
+
+	//	$download_name = '';
 
 		// Get photo data
 		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id 
@@ -117,14 +118,6 @@ class Download extends Services{
 		
 		// Allow some padding
 		if($download_type == 'zip') $download_size *= 1.005;
-	
-		// Log the archive in the downloads table
-		$a = array(	'user_id' => $user_id, 
-					'download_filename' => $download_name, 
-					'download_filesize' => $download_size, 
-					'download_photos' => $file_ids, 
-					'download_size' => $size, 
-					'xx_download_created' => 'CURRENT_TIMESTAMP');
 					
 		$this->download_id = $download_id;//$this->db->insert("downloads", $a, true);
 		$this->download_start = microtime(true);
