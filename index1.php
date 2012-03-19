@@ -47,10 +47,8 @@ class Download extends Services{
 
 			}
 
-
-
 		} 
-
+/*
 		// For zips, redirect to IP address so session doesn't expire
 		if(stripos($file_ids, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
 			
@@ -62,7 +60,7 @@ class Download extends Services{
 
 		}		
 
-
+*/
 		if(!isset($user_id)) exit();
 		if(!isset($file_ids)) exit();
 		if(!isset($size)) $size = 'original';				
@@ -117,13 +115,6 @@ class Download extends Services{
 
 		}
 		
-
-
-		// See download vars
-		$download_type = (isset($album_id) || mysql_num_rows($result) > 1) ? 'zip' : 'file';
-		$download_name = ($download_type == 'zip') ? $name . '.zip' : $download_files[0]['name'];
-		$download_name = $this->cleanString($download_name); 
-
 		// Allow some padding
 		if($download_type == 'zip') $download_size *= 1.005;
 	
@@ -135,7 +126,7 @@ class Download extends Services{
 					'download_size' => $size, 
 					'xx_download_created' => 'CURRENT_TIMESTAMP');
 					
-		$this->download_id = $this->db->insert("downloads", $a, true);
+		$this->download_id = $download_id;//$this->db->insert("downloads", $a, true);
 		$this->download_start = microtime(true);
 		$this->download_status = "Starting";
 		$this->download_complete = false;
