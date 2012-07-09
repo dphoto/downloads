@@ -177,7 +177,7 @@ class Download extends Services{
 			$download_safe = utf8_decode($download_name);
 
 			$response = array(	'content-type' => 'application/octet-stream',
-        						'content-disposition' => "attachment; filename=$download_safe; filename*=$download_name");
+        						'content-disposition' => "attachment; filename=$download_safe");
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
 			$link = str_replace('.s3.amazonaws.com', '', $link);
@@ -212,7 +212,7 @@ class Download extends Services{
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
 		header("Content-Type: $ctype");
-		header("Content-Disposition: attachment; filename=$download_safe; filename*=$download_name" );
+		header("Content-Disposition: attachment; filename=$download_safe" );
 		header("Content-Transfer-Encoding: binary");
 	//	header("Content-Length: $download_size");
 		
