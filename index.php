@@ -173,7 +173,7 @@ class Download extends Services{
 
 			
 
-			$response = array(	'content-type' => 'application/octet-stream',
+			$response = array(	'content-type' => 'application/octet-stream; charset=UTF-8',
         						'content-disposition' => "attachment; filename=$download_name");
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
