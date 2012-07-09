@@ -126,10 +126,12 @@ class Download extends Services{
 
 			$download_size *= 1.005;
 			$download_name .= '.zip';
+			$download_safe = utf8_decode($download_name);
 
 		} else {
 
 			$download_name = $download_files[0]['name'];
+			$download_safe = utf8_decode($download_name);
 
 		} 
 
@@ -138,6 +140,7 @@ class Download extends Services{
 		$this->download_status = "Starting";
 		$this->download_complete = false;
 		$this->download_name = $download_name;
+
 
 
 		$a = array(	'download_filesize' => $download_size,
@@ -171,10 +174,10 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			
+			$download_safe = utf8_decode($download_name);
 
-			$response = array(	'content-type' => 'application/octet-stream; charset=UTF-8',
-        						'content-disposition' => "attachment; filename=$download_name");
+			$response = array(	'content-type' => 'application/octet-stream',
+        						'content-disposition' => "attachment; filename=$download_safe; filename*=$download_name");
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
 			$link = str_replace('.s3.amazonaws.com', '', $link);
@@ -198,6 +201,7 @@ class Download extends Services{
 		
 		// Get the ctype
 		$ctype = $this->getCtype($download_name);
+		$download_safe = utf8_decode($download_name);
 		
 		// Required for IE, otherwise Content-disposition is ignored
 		if(ini_get('zlib.output_compression')) ini_set('zlib.output_compression', 'Off');
@@ -208,7 +212,7 @@ class Download extends Services{
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
 		header("Content-Type: $ctype");
-		header("Content-Disposition: attachment; filename=$download_name;" );
+		header("Content-Disposition: attachment; filename=$download_safe; filename*=$download_name" );
 		header("Content-Transfer-Encoding: binary");
 	//	header("Content-Length: $download_size");
 		
