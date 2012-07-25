@@ -234,7 +234,7 @@ class Health extends Services{
 							'Unit'			=> $unit);
 
 		// Add instanceID for EC2
-		if($space == 'AWS/EC2'){ 
+		if($space == 'SYSTEM'){ 
 
 			// InstanceID retrieved from Services class
 			$metrics['Dimensions'] = array('Name' => 'InstanceID', 'Value' => $this->instance);
@@ -268,9 +268,9 @@ class Health extends Services{
 			$key = $arr[0];
 			$value = $arr[1];
 
-			if( $key == "BusyWorkers" ) $this->log('AWS/EC2', 'ApacheBusyWorkers', $value);
-			if( $key == "IdleWorkers" ) $this->log('AWS/EC2', 'ApacheIdleWorkers', $value);
-			if( $key == "ReqPerSec" ) $this->log('AWS/EC2', 'ApacheRequestsSec', $value);
+			if( $key == "BusyWorkers" ) $this->log('SYSTEM', 'ApacheBusyWorkers', $value);
+			if( $key == "IdleWorkers" ) $this->log('SYSTEM', 'ApacheIdleWorkers', $value);
+			if( $key == "ReqPerSec" ) $this->log('SYSTEM', 'ApacheRequestsSec', $value);
 
 
 		}
@@ -289,7 +289,7 @@ class Health extends Services{
 
 	    }
 
-	    $this->log('AWS/EC2','MemoryAvailable', $freemem, "Megabytes");
+	    $this->log('SYSTEM','MemoryAvailable', $freemem, "Megabytes");
 
 	}
   
@@ -303,7 +303,7 @@ class Health extends Services{
 
 	    	if($value > $threshold) {
 
-	    		$this->log('AWS/EC2','DiskPercentUsed', $value, "DiskPercentUsed");
+	    		$this->log('SYSTEM','DiskPercentUsed', $value, "DiskPercentUsed", "Percent");
 
 	        	$this->error('Check Disk', "Disk space alert, {$value}% full", $value, true);
 	    	}
