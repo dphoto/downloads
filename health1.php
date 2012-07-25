@@ -54,7 +54,7 @@ class Health extends Services{
 		$this->checkStaleFiles('/var/tmp', 5400);
 		
 		// Stop DNS checks all happening at same time
-		sleep(rand(1, 120));
+		//sleep(rand(1, 120));
 		
 		$this->checkAddresses();
 
@@ -237,7 +237,7 @@ class Health extends Services{
 		if($space == 'SYSTEM'){ 
 
 			// InstanceID retrieved from Services class
-			$metrics['Dimensions'] = array('Name' => 'InstanceID', 'Value' => $this->instance);
+			$metrics['Dimensions'] = array('Name' => 'InstanceId', 'Value' => $this->instance);
 
 		//	$space = "DPHOTO";
 
