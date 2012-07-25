@@ -237,7 +237,7 @@ class Health extends Services{
 		if($space == 'SYSTEM'){ 
 
 			// InstanceID retrieved from Services class
-			$metrics['Dimensions'] = array('Name' => 'InstanceId', 'Value' => $this->instance);
+			$metrics['Dimensions'] = array( array('Name' => 'InstanceId', 'Value' => $this->instance) );
 
 		//	$space = "DPHOTO";
 
