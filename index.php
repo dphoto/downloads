@@ -177,7 +177,7 @@ class Download extends Services{
 			$download_safe = utf8_decode($download_name);
 
 			$response = array(	'content-type' => 'application/octet-stream',
-        						'content-disposition' => "attachment; filename=$download_safe");
+        						'content-disposition' => "attachment; filename=$download_name");
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
 			$link = str_replace('.s3.amazonaws.com', '', $link);
