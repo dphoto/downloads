@@ -102,7 +102,7 @@ class Download extends Services{
 			// Get file details
 			$file_bucket = $this->getBucket($file_backup);
 			$file_key = $this->getKey($file_arr, $size, $file_resize);
-			$file_upname = $this->getValidFilename($file_names, $file_upname);
+			$file_upname = $this->getValidFilename($file_names, $file_upname, $file_upext);
 			$file_size = $size == 'original' ? $file_size : 0;
 			$file_ext = $this->getExtension($file_key);
 
@@ -120,7 +120,7 @@ class Download extends Services{
 				array_push($download_files, $file);	
 
 				// Add to list of filename already used
-				array_push($file_names, $file_upname);
+				array_push($file_names, "$file_upname.$file_upext");
 			
 				// Increment the download size
 				$download_size += $file_size;			
@@ -271,13 +271,13 @@ class Download extends Services{
 	 * @param string $file_upname The filename to check
 	 * @return string
 	 */
-	function getValidFilename($file_names, $file_upname){
+	function getValidFilename($file_names, $file_upname, $file_upext){
 
 		$i = 0;
 
 		$file_newname = $file_upname;
 
-		while( in_array($file_newname, $file_names) ){
+		while( in_array($file_newname . ".".$file_upext, $file_names) ){
 
 			$i++;
 			$file_newname = $file_upname . "-$i";
