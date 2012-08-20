@@ -55,6 +55,9 @@ class Download extends Services{
 				exit();
 
 		}
+		/*
+
+		// REDIRECT NOT NEEDED NOW THAT STICKY SESSIONS ENABLED??
 
 		// For zips, redirect to IP address so session doesn't expire
 		if(stripos($download_photos, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
@@ -65,7 +68,8 @@ class Download extends Services{
 			exit();
 
 
-		}		
+		}
+		*/		
 
 
 		//if(!isset($user_id)) exit();
@@ -87,7 +91,7 @@ class Download extends Services{
 
 		$result = $this->db->select($query);
 
-
+		$file_names = array();
 
 		// Go through result set and build paths
 		while($file_arr = mysql_fetch_assoc($result)){
@@ -98,6 +102,7 @@ class Download extends Services{
 			// Get file details
 			$file_bucket = $this->getBucket($file_backup);
 			$file_key = $this->getKey($file_arr, $size, $file_resize);
+			$file_upname = $this->getValidFilename($file_names, $file_upname);
 			$file_size = $size == 'original' ? $file_size : 0;
 			$file_ext = $this->getExtension($file_key);
 
@@ -113,6 +118,9 @@ class Download extends Services{
 				
 				// Add file to download list
 				array_push($download_files, $file);	
+
+				// Add to list of filename already used
+				array_push($file_names, $file_upname);
 			
 				// Increment the download size
 				$download_size += $file_size;			
@@ -256,6 +264,30 @@ class Download extends Services{
 		
 	}
 	
+
+	/**
+	 * Ensures no 2 files in a zip have the same name
+	 * @param array $file_names list of all names currently being used
+	 * @param string $file_upname The filename to check
+	 * @return string
+	 */
+	function getValidFilename($file_names, $file_upname){
+
+		$i = 0;
+
+		$file_newname = $file_upname;
+
+		while( in_array($file_newname, $file_names) ){
+
+			$i++;
+			$file_newname = $file_upname . "-$i";
+
+		}
+
+		return $file_newname;
+
+	}
+
 	function downloadFile($file_arr) { 
 
 		$file = $this->getPhoto($file_arr['bucket'], $file_arr['key']);
