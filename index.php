@@ -55,7 +55,7 @@ class Download extends Services{
 				exit();
 
 		}
-		/
+		
 
 		// REDIRECT NOT NEEDED NOW THAT STICKY SESSIONS ENABLED??
 
