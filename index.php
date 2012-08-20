@@ -55,7 +55,7 @@ class Download extends Services{
 				exit();
 
 		}
-		/*
+		/
 
 		// REDIRECT NOT NEEDED NOW THAT STICKY SESSIONS ENABLED??
 
@@ -69,7 +69,7 @@ class Download extends Services{
 
 
 		}
-		*/		
+		
 
 
 		//if(!isset($user_id)) exit();
