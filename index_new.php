@@ -129,7 +129,7 @@ class Download extends Services{
 
 		}
 		
-		//$this->error("Download Filenames", implode(',', $file_names), 0, true);
+		$this->error("Download Filenames", implode(',', $file_names), 0, true);
 
 		// Allow some padding
 		if($download_type == 'zip'){ 
