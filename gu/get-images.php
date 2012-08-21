@@ -4,7 +4,7 @@
 
 	$db = new Database( 'guest-upload' );
 
-	$guest_id = 1;
+	$guest_id = $_REQUEST['guest_id'];
 
 	$json_response = array( 'error' => 'noresults' );
 

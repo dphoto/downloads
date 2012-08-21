@@ -207,7 +207,7 @@
 		<!-- Upload Static Vars -->
 		<input type="hidden" id="auth_key" value="<?php echo $_REQUEST['auth_key']; ?>" />
 		<input type="hidden" id="status_url" value="status.php" />
-		<input type="hidden" id="check_files_url" value="get-images.php" />
+		<input type="hidden" id="check_files_url" value="get-images.php?guest_id=<?php echo $auth['guest_id']; ?>" />
 
 		<!-- Submission Frames -->
 		<div id="submitFrames">
