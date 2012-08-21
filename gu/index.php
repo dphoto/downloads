@@ -189,6 +189,7 @@
 
 			<input type="hidden" name="album_key" value="<?php echo $album_key; ?>" />
 			<input type="hidden" name="auth_key" value="<?php echo $auth_key; ?>" />
+			<input type="hidden" name="u" value="<?php echo $user_id; ?>" />
 
 			<div id="uploadArea">
 
