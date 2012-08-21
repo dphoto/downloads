@@ -56,7 +56,7 @@ class Download extends Services{
 
 		}
 		
-
+		/*
 		// REDIRECT NOT NEEDED NOW THAT STICKY SESSIONS ENABLED??
 
 		// For zips, redirect to IP address so session doesn't expire
@@ -70,7 +70,7 @@ class Download extends Services{
 
 		}
 		
-
+		*/
 
 		//if(!isset($user_id)) exit();
 		//if(!isset($file_ids)) exit();
