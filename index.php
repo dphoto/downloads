@@ -102,7 +102,7 @@ class Download extends Services{
 			// Get file details
 			$file_bucket = $this->getBucket($file_backup);
 			$file_key = $this->getKey($file_arr, $size, $file_resize);
-			//$file_upname = $this->getValidFilename($file_names, $file_upname, $file_upext);
+			$file_upname = $this->getValidFilename($file_names, $file_upname, $file_upext);
 			$file_size = $size == 'original' ? $file_size : 0;
 			$file_ext = $this->getExtension($file_key);
 
@@ -129,6 +129,8 @@ class Download extends Services{
 
 		}
 		
+		$this->error("Download Filenames", implode(',', $file_names, 0, true));
+
 		// Allow some padding
 		if($download_type == 'zip'){ 
 
