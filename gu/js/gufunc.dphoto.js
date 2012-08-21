@@ -145,6 +145,7 @@
 			postData.append( jQuery( "#upload_tracking_key" ).attr( 'name' ), globGU.currentFile[0].trackingKey );
 			postData.append( "auth_key", jQuery( 'input[name=auth_key]' ).val() );
 			postData.append( "album_key", jQuery( 'input[name=album_key]' ).val() );
+			postData.append( "u", jQuery( 'input[name=u]' ).val() );
 			postData.append( "uploadedFile[]", globGU.currentFile[0] );
 
 			calculateTotals();
