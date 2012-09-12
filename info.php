@@ -19,4 +19,6 @@ function output_iptc_data( $image_path ) {
     }
 }
 
+output_iptc_data($image_path);
+
 ?>
