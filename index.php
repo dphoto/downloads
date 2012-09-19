@@ -184,7 +184,7 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_safe = $this->cleanEncoding($download_name);//utf8_decode($download_name);
+			$download_safe = $this->encodeISO($download_name);//utf8_decode($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
 			$response = array(	'content-type' => $download_mime,
@@ -462,6 +462,12 @@ class Download extends Services{
 		
 	}
 
+
+	private function encodeISO($s){
+		
+		return mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "ISO-8859-1" ? $s : utf8_decode($s);
+		
+	}
 
 	function onTimeout(){
 		
