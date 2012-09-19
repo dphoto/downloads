@@ -184,11 +184,12 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_safe = $this->encodeISO($download_name);//utf8_decode($download_name);
+			$download_safe = $download_name;//utf8_decode($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
 			$response = array(	'content-type' => $download_mime,
-        						'content-disposition' => "attachment; filename=$download_safe");
+        						'content-disposition' => "attachment; filename=$download_safe",
+        						'response-content-encoding' => 'utf-8');
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
 			$link = str_replace('.s3.amazonaws.com', '', $link);
