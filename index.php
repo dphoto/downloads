@@ -184,7 +184,7 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_safe = rawurldecode( rawurlencode($download_name) );
+			$download_safe = rawurlencode($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
 			$response = array(	'content-type' => $download_mime,
