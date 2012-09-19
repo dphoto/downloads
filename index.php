@@ -141,7 +141,7 @@ class Download extends Services{
 		} else {
 
 			$download_name = $download_files[0]['name'];
-			$download_safe = utf8_decode($download_name);
+			//$download_safe = utf8_decode($download_name);
 
 		} 
 
@@ -184,12 +184,11 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_safe = $download_name;//utf8_decode($download_name);
+			$download_safe = $this->cleanEncoding($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
 			$response = array(	'content-type' => $download_mime,
-        						'content-disposition' => "attachment; filename=$download_safe",
-        						'response-content-encoding' => 'utf-8');
+        						'content-disposition' => "attachment; filename=$download_safe" );
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
 			$link = str_replace('.s3.amazonaws.com', '', $link);
@@ -467,6 +466,12 @@ class Download extends Services{
 	private function encodeISO($s){
 		
 		return mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "ISO-8859-1" ? $s : utf8_decode($s);
+		
+	}
+
+	private function encodeURL($s){
+		
+		return urlencode($s);
 		
 	}
 
