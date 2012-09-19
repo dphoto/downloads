@@ -184,7 +184,7 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_safe = rawurlencode($download_name);
+			$download_safe = $this->encodeHeader($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
 			$response = array(	'content-type' => $download_mime,
@@ -481,10 +481,14 @@ class Download extends Services{
 		
 	}
 
-	private function encodeURL($s){
+	private function encodeHeader($s){
 		
-		return urlencode($s);
-		
+		$s = rawurlencode($s);
+		$s = str_replace('%28', '(', $s);
+		$s = str_replace('%29', ')', $s);
+
+		return $s;	
+
 	}
 
 	function onTimeout(){
