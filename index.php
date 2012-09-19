@@ -465,11 +465,11 @@ class Download extends Services{
 
 	private function encodeISO($s){
 		
-		if(mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "ISO-8859-1"){
+		if( mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "ISO-8859-1" ){
 
 			$this->db->error("Encode", "$s is ISO", 0, true);
 
-			return $s 
+			return $s; 
 
 		} else {
 
