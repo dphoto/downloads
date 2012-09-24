@@ -32,7 +32,7 @@
 	$api = new DPHOTO( $api_creds );
 
 	// Set current working user
-	$api->set_user( 81065, 'ab09cba34f0ae3b197118ea3422f8621' );
+	$api->set_user( 18898, '0f6715764566ca441e1e2cbda88f6281' );
 
 	if ( $file_ids ) {
 		$json_response = array();
