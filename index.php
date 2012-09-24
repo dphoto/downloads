@@ -141,7 +141,7 @@ class Download extends Services{
 		} else {
 
 			$download_name = $download_files[0]['name'];
-			$download_safe = utf8_decode($download_name);
+			//$download_safe = utf8_decode($download_name);
 
 		} 
 
@@ -184,10 +184,11 @@ class Download extends Services{
 		// Download file	
 		if($download_type == 'file'){ 
 
-			$download_safe = utf8_decode($download_name);
+			$download_safe = $this->encodeHeader($download_name);
+			$download_mime = $this->getCtype($file_ext);
 
-			$response = array(	'content-type' => 'application/octet-stream',
-        						'content-disposition' => "attachment; filename=$download_name");
+			$response = array(	'content-type' => $download_mime,
+        						'content-disposition' => "attachment; filename=$download_safe" );
 
 			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
 			$link = str_replace('.s3.amazonaws.com', '', $link);
@@ -454,6 +455,41 @@ class Download extends Services{
 		return 1;
 	}	
 
+
+	private function cleanEncoding($s){
+		
+		return mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "UTF-8" ? $s : utf8_encode($s);
+		
+	}
+
+
+	private function encodeISO($s){
+		
+		if( mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "ISO-8859-1" ){
+
+			$this->db->error("Encode", "$s is ISO", 0, true);
+
+			return $s; 
+
+		} else {
+
+			$this->db->error("Encode", "$s is UTF", 0, true);
+
+			return utf8_decode($s);
+
+		}
+		
+	}
+
+	private function encodeHeader($s){
+		
+		$s = rawurlencode($s);
+		$s = str_replace('%28', '(', $s);
+		$s = str_replace('%29', ')', $s);
+
+		return $s;	
+
+	}
 
 	function onTimeout(){
 		
