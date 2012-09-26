@@ -10,8 +10,8 @@ SendMail
 
 error_reporting(E_ALL ^ E_NOTICE);
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Includes
 require_once 'services.php';
@@ -26,10 +26,12 @@ class SendMail extends Services{
 	function Sendmail(){
 
 		echo " Sendmail 1 ";
-		$this->error('Send Mail', "Init sendmail", 0);
-			echo " Sendmail 2";
+	
+			
 		// Initialise
 		parent::__construct('SendMail');
+echo " Sendmail 2";
+			$this->error('Send Mail', "Init sendmail", 0);
 			echo " Sendmail 3";
 		// 1 minute limit
 		set_time_limit(60);
