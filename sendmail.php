@@ -25,25 +25,25 @@ class SendMail extends Services{
 
 	function Sendmail(){
 
-		echo " Sendmail ";
+		echo " Sendmail 1 ";
 		$this->error('Send Mail', "Init sendmail", 0);
-		
+			echo " Sendmail 2";
 		// Initialise
 		parent::__construct('SendMail');
-		
+			echo " Sendmail 3";
 		// 1 minute limit
 		set_time_limit(60);
 
 		// Reserve some email tasks	//AND email_from LIKE '%support@dphoto.com%'
-		$this->db->update('emails', array('email_status' => $this->id), "email_status='W'  ORDER BY email_id LIMIT 20");
-
+		$this->db->update('emails', array('email_status' => $this->id), "email_status='W' ORDER BY email_id LIMIT 20");
+	echo " Sendmail 4";
 		// Get all emails that have been reserved
 		$result = $this->db->select("SELECT * FROM emails WHERE email_status = '$this->id'");
 
-		
+			echo " Sendmail 5";
 		// Process the email one at a time
 		while($email = mysql_fetch_assoc($result)){
-			
+				echo " Sendmail 6";
 			$this->processAWSMail($email);
 
 		}
