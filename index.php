@@ -134,7 +134,7 @@ class Download extends Services{
 		// Allow some padding
 		if($download_type == 'zip'){ 
 
-			$download_size *= 1.005;
+			// $download_size *= 1.005;
 			$download_name .= '.zip';
 			$download_safe = utf8_decode($download_name);
 
