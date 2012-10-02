@@ -232,7 +232,7 @@ class Download extends Services{
 		// If file is bigger, just don't send final size.
 		if($download_size > 0){
 			
-			header("Content-Length: ". $download_size);
+			//header("Content-Length: ". $download_size);
 			
 		}
 		
