@@ -58,12 +58,12 @@ class Cron extends Services{
 			// Store task in class vars for easy access
 			//foreach($file as $key => $value) $this->{$key} = $value;
 
-			echo "<br>Running task for $this->file_id"; 
+			echo "<br>Running task for " . $file['file_id']; 
 
 			$bucket = $this->getBucket($file['file_backup']);
 
 			// Delete
-			$tiny_key = $this->getBucket($file, 'tiny');
+			$tiny_key = $this->getKey($file, 'tiny');
 			$small_key = $this->getBucket($file, 'small');
 			$thumb_key = $this->getBucket($file, 'thumb');
 			$preview_key = $this->getBucket($file, 'preview');
