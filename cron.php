@@ -64,17 +64,17 @@ class Cron extends Services{
 
 			// Delete
 			$tiny_key = $this->getKey($file, 'tiny');
-			$small_key = $this->getBucket($file, 'small');
-			$thumb_key = $this->getBucket($file, 'thumb');
-			$preview_key = $this->getBucket($file, 'preview');
+			$small_key = $this->getKey($file, 'small');
+			$thumb_key = $this->getKey($file, 'thumb');
+			$preview_key = $this->getKey($file, 'preview');
 
 			// Reduced redundency
-			$square_key = $this->getBucket($file, 'square');
-			$blog_key = $this->getBucket($file, 'blog');
-			$medium_key = $this->getBucket($file, 'medium');
-			$large_key = $this->getBucket($file, 'large');
-			$huge_key = $this->getBucket($file, 'huge');
-			$hd_key = $this->getBucket($file, 'hd');
+			$square_key = $this->getKey($file, 'square');
+			$blog_key = $this->getKey($file, 'blog');
+			$medium_key = $this->getKey($file, 'medium');
+			$large_key = $this->getKey($file, 'large');
+			$huge_key = $this->getKey($file, 'huge');
+			$hd_key = $this->getKey($file, 'hd');
 
 			echo "<br>Running task for $bucket $small_key"; 			
 
