@@ -31,7 +31,7 @@ class Cron extends Services{
 
 	function Cron(){
 
-
+		set_time_limit(600);
 
 		// Initialize Services
 		parent::__construct('Cron');		
