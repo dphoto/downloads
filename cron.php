@@ -49,9 +49,10 @@ class Cron extends Services{
 
 		echo "<br>get task"; 
 
-		$this->db->update('files', array('server_id' => $this->id),  "server_id = 1 OR server_id IS NULL ORDER BY file_id LIMIT $this->limit");
+		//$this->db->update('files', array('server_id' => $this->id),  "server_id = 1 OR server_id IS NULL ORDER BY file_id LIMIT $this->limit");
 
-		$result = $this->db->select("SELECT * FROM files WHERE server_id = $this->id LIMIT $this->limit");
+		//$result = $this->db->select("SELECT * FROM files WHERE server_id = $this->id LIMIT $this->limit");
+		$result = $this->db->select("SELECT * FROM files WHERE file_id = 10094266");
 
 		while($file = mysql_fetch_assoc($result)){
 
