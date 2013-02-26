@@ -56,11 +56,11 @@ class Cron extends Services{
 		while($file = mysql_fetch_assoc($result)){
 
 			// Store task in class vars for easy access
-			foreach($file as $key => $value) $this->{$key} = $value;
+			//foreach($file as $key => $value) $this->{$key} = $value;
 
 			echo "<br>Running task for $this->file_id"; 
 
-			$bucket = $this->getBucket($this->file_backup);
+			$bucket = $this->getBucket($file['file_backup']);
 
 			// Delete
 			$tiny_key = $this->getBucket($file, 'tiny');
@@ -78,12 +78,12 @@ class Cron extends Services{
 
 			echo "<br>Running task for $bucket $small_key"; 			
 
-			 $this->deletePhoto($bucket, $tiny_key);
+			// $this->deletePhoto($bucket, $tiny_key);
 			// $this->deletePhoto($bucket, $small_key);
 			// $this->deletePhoto($bucket, $thumb_key);
 			// $this->deletePhoto($bucket, $preview_key);
 
-			 $this->reducedRedundency($bucket, $square_key);
+			// $this->reducedRedundency($bucket, $square_key);
 			// $this->reducedRedundency($bucket, $blog_key);
 			// $this->reducedRedundency($bucket, $medium_key);
 			// $this->reducedRedundency($bucket, $large_key);
@@ -96,7 +96,7 @@ class Cron extends Services{
 
 
 
-	protected function reducedRedundency($bucket, $key) {
+	function reducedRedundency($bucket, $key) {
 		
 		$attempt = 0;
 		
