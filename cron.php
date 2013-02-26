@@ -78,17 +78,17 @@ class Cron extends Services{
 
 			echo "<br>Running task for $bucket $small_key"; 			
 
-			// $this->deletePhoto($bucket, $tiny_key);
-			// $this->deletePhoto($bucket, $small_key);
-			// $this->deletePhoto($bucket, $thumb_key);
-			// $this->deletePhoto($bucket, $preview_key);
+			$this->deletePhoto($bucket, $tiny_key);
+			$this->deletePhoto($bucket, $small_key);
+			$this->deletePhoto($bucket, $thumb_key);
+			$this->deletePhoto($bucket, $preview_key);
 
-			// $this->reducedRedundency($bucket, $square_key);
-			// $this->reducedRedundency($bucket, $blog_key);
-			// $this->reducedRedundency($bucket, $medium_key);
-			// $this->reducedRedundency($bucket, $large_key);
-			// $this->reducedRedundency($bucket, $huge_key);
-			// $this->reducedRedundency($bucket, $hd_key);
+			$this->reducedRedundency($bucket, $square_key);
+			$this->reducedRedundency($bucket, $blog_key);
+			$this->reducedRedundency($bucket, $medium_key);
+			$this->reducedRedundency($bucket, $large_key);
+			$this->reducedRedundency($bucket, $huge_key);
+			$this->reducedRedundency($bucket, $hd_key);
 
 		}
 
