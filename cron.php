@@ -41,7 +41,7 @@ class Cron extends Services{
 
 		$expires = time() + 550;		
 
-		while(time() < $expires) $this->getTask();
+		$this->getTask();
 
 
 	}
@@ -63,6 +63,7 @@ class Cron extends Services{
 
 			echo "<br>Running task for " . $file['file_id']; 
 
+			$file_id = $file['file_id'];
 			$bucket = $this->getBucket($file['file_backup']);
 
 			// Delete
@@ -94,6 +95,10 @@ class Cron extends Services{
 				$this->reducedRedundency($bucket, $large_key);
 				$this->reducedRedundency($bucket, $huge_key);
 				$this->reducedRedundency($bucket, $hd_key);
+
+				$this->db->update('files', array('server_id' => 0),  "file_id = $file_id");
+
+				echo "<br>Completed task for $file_id"; 
 
 			} catch(Exception $e){
 
