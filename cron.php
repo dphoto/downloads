@@ -39,7 +39,9 @@ class Cron extends Services{
 		$this->id = rand(2, 128);
 		$this->limit = 1;
 
-		$this->getTask();
+		$expires = time() + 550;		
+
+		while(time() < $expires) $this->getTask();
 
 
 	}
@@ -79,18 +81,26 @@ class Cron extends Services{
 
 			echo "<br>Running task for $bucket $small_key"; 			
 
-			$this->deletePhoto($bucket, $tiny_key);
-			$this->deletePhoto($bucket, $small_key);
-			$this->deletePhoto($bucket, $thumb_key);
-			$this->deletePhoto($bucket, $preview_key);
+			try{
 
-			$this->reducedRedundency($bucket, $square_key);
-			$this->reducedRedundency($bucket, $blog_key);
-			$this->reducedRedundency($bucket, $medium_key);
-			$this->reducedRedundency($bucket, $large_key);
-			$this->reducedRedundency($bucket, $huge_key);
-			$this->reducedRedundency($bucket, $hd_key);
+				$this->deletePhoto($bucket, $tiny_key);
+				$this->deletePhoto($bucket, $small_key);
+				$this->deletePhoto($bucket, $thumb_key);
+				$this->deletePhoto($bucket, $preview_key);
 
+				$this->reducedRedundency($bucket, $square_key);
+				$this->reducedRedundency($bucket, $blog_key);
+				$this->reducedRedundency($bucket, $medium_key);
+				$this->reducedRedundency($bucket, $large_key);
+				$this->reducedRedundency($bucket, $huge_key);
+				$this->reducedRedundency($bucket, $hd_key);
+
+			} catch(Exception $e){
+
+				$this->error('Cron', "Exception ".$e->getMessage(), $e->getCode(), false);
+				echo "Exceptoin " . $e->getMessage();
+			}
+			
 		}
 
 	}
