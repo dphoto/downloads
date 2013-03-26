@@ -87,7 +87,8 @@ class Download extends Services{
 		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id 
 					FROM files
 					WHERE file_id IN ($download_photos) 
-					AND user_id = $user_id";
+					AND user_id = $user_id
+					AND file_deleted = 0";
 
 		$result = $this->db->select($query);
 

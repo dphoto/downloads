@@ -37,7 +37,7 @@ class Cron extends Services{
 		parent::__construct('Cron');		
 
 		$this->id = rand(2, 128);
-		$this->limit = 10;
+		$this->limit = 6;
 
 		$expires = time() + 550;		
 
