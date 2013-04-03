@@ -93,13 +93,16 @@ class Delete extends Services{
 					}
 					
 					$a = array(	'user_id' => $user_id,
+								'file_id' => $file_id,
 								'delete_type' => 'file',
-								'delete_data' => $file);
+								'delete_data' => http_build_query( $file );
 
+
+					echo "Inserting into delete $file_id : " .http_build_query($file);
 
 
 					// Update deleted_files table
-					$this->db->insert('deletes', $a, "file_id = $file_id");
+					$this->db->insert('deletes', $a);
 				
 					// $this->db->delete('files', "file_id = $file_id");
 					// $this->db->delete('photos', "file_id = $file_id");
