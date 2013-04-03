@@ -35,6 +35,8 @@ class Delete extends Services{
 		// Initialize Services
 		parent::__construct('Delete');		
 
+		echo "Init";
+
 		// Allow 10 min
 		set_time_limit(600);
 
@@ -80,6 +82,8 @@ class Delete extends Services{
 					$bucket = $this->getBucket($file_backup);
 				
 					foreach($sizes as $size){
+
+						echo "Deleting $file_id : $size";
 					
 						$key = $this->getKey($file, $size);
 					
@@ -90,7 +94,7 @@ class Delete extends Services{
 					
 					$a = array(	'user_id' => $user_id,
 								'delete_type' => 'file',
-								'delete_data' => $file)
+								'delete_data' => $file);
 
 
 
@@ -113,6 +117,8 @@ class Delete extends Services{
 			
 		} catch(Exception $e){
 			
+			echo "Exception " . $e->getMessage();
+
 			$this->error('Delete Files', $e->getMessage(), $e->getCode());
 			
 		}
