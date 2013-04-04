@@ -95,7 +95,7 @@ class Delete extends Services{
 					$a = array(	'user_id' => $user_id,
 								'file_id' => $file_id,
 								'delete_type' => 'file',
-								'delete_data' => http_build_query( $file );
+								'delete_data' => http_build_query( $file ) );
 
 
 					echo "Inserting into delete $file_id : " .http_build_query($file);
