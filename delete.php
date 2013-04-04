@@ -66,7 +66,7 @@ class Delete extends Services{
 			$query = "	SELECT * FROM files
 						WHERE file_backup <> 0
 						AND TIMESTAMPDIFF(MONTH, file_deleted , CURRENT_TIMESTAMP ) > 1
-						LIMIT 1";
+						LIMIT 10";
 	
 			$result = $this->db->select($query);
 
@@ -104,11 +104,11 @@ class Delete extends Services{
 					// Update deleted_files table
 					$this->db->insert('deletes', $a);
 				
-					// $this->db->delete('files', "file_id = $file_id");
-					// $this->db->delete('photos', "file_id = $file_id");
-					// $this->db->delete('videos', "file_id = $file_id");
-					// $this->db->delete('sizes', "file_id = $file_id");
-					// $this->db->delete('geos', "file_id = $file_id");
+					$this->db->delete('files', "file_id = $file_id");
+					$this->db->delete('photos', "file_id = $file_id");
+					$this->db->delete('videos', "file_id = $file_id");
+					$this->db->delete('sizes', "file_id = $file_id");
+					$this->db->delete('geos', "file_id = $file_id");
 
 					//echo "Deleted http://$bucket/$key \n";
 				
