@@ -11,6 +11,7 @@ use Aws\Common\Enum\Region;
 use Aws\ElasticTranscoder\Exception;
 
 error_reporting(E_ALL ^ E_NOTICE);
+ini_set( 'display_errors', 'on' );
 putenv("MAGICK_TMPDIR=/var/tmp");
 
 
