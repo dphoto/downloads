@@ -158,10 +158,12 @@ class Tasks extends Services{
 		}
 		*/
 
+		$this->id = 'DEBUG';
+
 
 		if($count < 1){
 
-			$this->db->update('tasks', array('task_status' => $this->id), "task_status='WW' AND task_type IN ('V', 'P', 'R', 'RE', 'RV', 'REPLACE') $where ORDER BY task_id LIMIT 1");
+			$this->db->update('tasks', array('task_status' => $this->id), "task_status='WW' AND task_type IN ('V') $where ORDER BY task_id LIMIT 1");
 			
 		} else {
 				
@@ -709,7 +711,7 @@ class Tasks extends Services{
 
 			$client = $aws->get('elastictranscoder');
 
-			$key = $this->task_parameter;
+			//$key = $this->task_parameter;
 
 			$medium = array(
 				'Key' => $this->getKey($this->task, 'medium'),
@@ -800,7 +802,7 @@ class Tasks extends Services{
 					//echo "Removing uploaded file from S3 \n";
 
 		  			// Delete the S3 file from uploads
-		        	$this->deletePhoto('uploads.dphoto.com', $this->task_parameter);
+		        	//$this->deletePhoto('uploads.dphoto.com', $this->task_parameter);
 
 		  			// Delete local copy
 		        	unlink($filepath);
