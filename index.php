@@ -32,9 +32,13 @@ class Download extends Services{
 
 		if(isset($download_id) && isset($download_key)){
 
+			$this->db->error("Got ID", "$download_id :: $download_key ");
+
 			$download = $this->db->select("SELECT * FROM downloads WHERE download_id = $download_id AND download_key = $download_key", 'row');
 
 			if(is_array($download)){
+
+				$this->db->error("Got array", var_dump($download));
 
 				$size = $download['download_size'];
 				$user_id = $download['user_id'];
@@ -45,6 +49,8 @@ class Download extends Services{
 				$download_size = 0;
 
 			} else {
+
+				$this->db->error("Incorrect ID", "$download_id :: $download_key ");
 
 				echo "Incorrect ID";
 				exit();
