@@ -71,12 +71,12 @@ class Download extends Services{
 		// For zips, redirect to IP address so session doesn't expire
 		if(stripos($download_photos, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
 			
-			$this->db->error("Download REDIRECT", $_SERVER['HTTP_HOST'] . ":: $download_id :: $download_key ");
+			$this->db->error("Download NO REDIRECT", $_SERVER['HTTP_HOST'] . ":: $download_id :: $download_key ");
 
-			$location = "http://" . $this->server . "/index.php?" . http_build_query($_REQUEST);
-			header( "HTTP/1.1 303 See Other" );
-			header( "Location: $location" );
-			exit();
+			// $location = "http://" . $this->server . "/index.php?" . http_build_query($_REQUEST);
+			// header( "HTTP/1.1 303 See Other" );
+			// header( "Location: $location" );
+			// exit();
 
 
 		}
