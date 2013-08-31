@@ -237,7 +237,7 @@ class Download extends Services{
 		header("Content-Type: $ctype");
 		header("Content-Disposition: attachment; filename=$download_safe" );
 		header("Content-Transfer-Encoding: binary");
-	//	header("Content-Length: $download_size");
+		header("Content-Length: $download_size");
 		
 		//$download_size < 2147483648 && 
 		// Apache headers are 32bit - limiting size to 2gb. 
