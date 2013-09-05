@@ -199,6 +199,9 @@ class Download extends Services{
 			$download_safe = $this->encodeHeader($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
+			$bucket = $download_files[0]['bucket'];
+			$key = $download_files[0]['key'];
+
 			if($user_id == 1){
 
 				$this->error("New PHP class 1", $link, 0, true);
@@ -210,8 +213,8 @@ class Download extends Services{
 				// Use new S3 Class
 				$s3 = $this->aws->get('s3');
 
-				$this->error("New PHP class 2", $link, 0, true);
-				$link = $s3->getObjectUrl($download_files[0]['bucket'], $download_files[0]['key'], '+2 days', $args);
+				$this->error("New PHP class 2", " $bucket : $key ", 0, true);
+				$link = $s3->getObjectUrl($bucket, $key, '+10 minutes');
 				$this->error("New PHP class 3", $link, 0, true);
 				$link = str_replace('.s3.amazonaws.com', '', $link);
 				$this->error("New PHP class 4", $link, 0, true);
