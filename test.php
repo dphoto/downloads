@@ -28,15 +28,16 @@ $s3 = $aws->get('s3');
 
 				$args = array(	'ResponseContentType' => 'imge/jpeg', 
 								'ResponseContentDisposition' => "attachment; filename=hello.jpg",
-								'SaveAs' => "hello.jpg",
 								'Scheme' => 'http');
 
 
 $link = $s3->getObjectUrl( $bucket, $key, '+2 days', $args );
 
+var_dump($link);
+
 $link = str_replace('s3.amazonaws.com/', '', $link);
 
-//var_dump($link);
+
 
 echo "$link";
 
