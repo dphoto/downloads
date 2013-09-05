@@ -3,8 +3,7 @@
 
 require_once 'services.php';
 
-//error_reporting(E_ALL);
-ini_set('display_errors', 0);
+
 
 @ini_set('magic_quotes_runtime', 0);
 
@@ -204,7 +203,8 @@ class Download extends Services{
 
 			if($user_id == 1){
 
-				$this->error("New PHP class 1", $link, 0, true);
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 
 				$args = array(	'ResponseContentType' => $download_mime, 
 								'ResponseContentDisposition' => "attachment; filename=$download_safe",
@@ -213,13 +213,10 @@ class Download extends Services{
 
 				// Use new S3 Class
 				$s3 = $this->aws->get('s3');
-
-				$this->error("New PHP class 2", " $bucket : $key ", 0, true);
 				$link = $s3->getObjectUrl($bucket, $key, '+2 days', $args);
 				$this->error("New PHP class 3", $link, 0, true);
 				$link = str_replace('s3.amazonaws.com/', '', $link);
-				$this->error("New PHP class 4", $link, 0, true);
-				
+
 
 			} else {
 
