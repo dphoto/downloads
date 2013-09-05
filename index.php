@@ -204,7 +204,7 @@ class Download extends Services{
 
 
 				$args = array(	'ResponseContentType' => $download_mime, 
-								'ResponseContentDisposition' => "attachment; filename=$download_safe"
+								'ResponseContentDisposition' => "attachment; filename=$download_safe",
 								'SaveAs' => $download_safe);
 
 				// Use new S3 Class
