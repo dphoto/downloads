@@ -201,7 +201,7 @@ class Download extends Services{
 
 			if($user_id == 1){
 
-
+				$this->error("New PHP class 1", $link, 0, true);
 
 				$args = array(	'ResponseContentType' => $download_mime, 
 								'ResponseContentDisposition' => "attachment; filename=$download_safe",
@@ -209,10 +209,13 @@ class Download extends Services{
 
 				// Use new S3 Class
 				$s3 = $this->aws->get('s3');
-				$link = $s3->getObjectUrl($download_files[0]['bucket'], $download_files[0]['key'], '+2 days', $args);
-				$link = str_replace('.s3.amazonaws.com', '', $link);
 
-				$this->error("New PHP class", $link, 0, true);
+				$this->error("New PHP class 2", $link, 0, true);
+				$link = $s3->getObjectUrl($download_files[0]['bucket'], $download_files[0]['key'], '+2 days', $args);
+				$this->error("New PHP class 3", $link, 0, true);
+				$link = str_replace('.s3.amazonaws.com', '', $link);
+				$this->error("New PHP class 4", $link, 0, true);
+				
 
 			} else {
 
