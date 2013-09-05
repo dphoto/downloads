@@ -199,11 +199,30 @@ class Download extends Services{
 			$download_safe = $this->encodeHeader($download_name);
 			$download_mime = $this->getCtype($file_ext);
 
-			$response = array(	'content-type' => $download_mime,
-        						'content-disposition' => "attachment; filename=$download_safe" );
+			if($user_id == 1){
 
-			$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
-			$link = str_replace('.s3.amazonaws.com', '', $link);
+
+
+				$args = array(	'ResponseContentType' => $download_mime, 
+								'ResponseContentDisposition' => "attachment; filename=$download_safe"
+								'SaveAs' => $download_safe);
+
+				// Use new S3 Class
+				$s3 = $this->aws->get('s3');
+				$link = $s3->getObjectUrl($download_files[0]['bucket'], $download_files[0]['key'], '+2 days', $args);
+				$link = str_replace('.s3.amazonaws.com', '', $link);
+
+				$this->error("New PHP class", $link, 0, true);
+
+			} else {
+
+				$response = array(	'content-type' => $download_mime,
+	        						'content-disposition' => "attachment; filename=$download_safe" );
+
+				$link = $this->s3->get_object_url($download_files[0]['bucket'], $download_files[0]['key'], '2 days', array('response' => $response));
+				$link = str_replace('.s3.amazonaws.com', '', $link);
+
+			}
 
 			$this->download_complete = true;
 
