@@ -203,12 +203,11 @@ class Download extends Services{
 
 			if($user_id == 1){
 
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
+			error_reporting(E_ALL);
+			ini_set('display_errors', 0);
 
 				$args = array(	'ResponseContentType' => $download_mime, 
 								'ResponseContentDisposition' => "attachment; filename=$download_safe",
-								'SaveAs' => $download_safe,
 								'Scheme' => 'http');
 
 				// Use new S3 Class
