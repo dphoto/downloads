@@ -33,8 +33,6 @@ class Download extends Services{
 
 			if(is_array($download)){
 
-				$this->db->error("Got array");
-
 				$size = $download['download_size'];
 				$user_id = $download['user_id'];
 				$download_photos = $download['download_photos'];
