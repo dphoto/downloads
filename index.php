@@ -3,6 +3,11 @@
 
 require_once 'services.php';
 
+// S3
+use Aws\S3;
+use Aws\S3\S3Client;
+use Aws\S3\Exception\Parser;
+use Aws\S3\Exception\S3Exception;
 
 
 @ini_set('magic_quotes_runtime', 0);
@@ -105,7 +110,7 @@ class Download extends Services{
 			// Get file details
 			$file_bucket = $this->getBucket($file_backup);
 			$file_key = $this->getKey($file_arr, $size, $file_resize);
-			$file_upname = $this->getValidFilename($file_names, $file_upname, $file_upext);
+			$file_upname = $this->getValidFilename($file_names, $file_upname, $size == 'original' ? $file_upext : $file_ext);
 			$file_size = $size == 'original' ? $file_size : 0;
 			$file_ext = $this->getExtension($file_key);
 
@@ -113,7 +118,7 @@ class Download extends Services{
 							'key' 		=> $file_key,
 							'size' 		=> $file_size,
 							'ext'		=> $file_ext,						
-							'name'		=> "$file_upname.$file_upext",
+							'name'		=> "$file_upname." . ( $size == 'original' ? $file_upext : $file_ext ),
 							'type'		=> 0 );
 			
 			// Ensure photo has a size				
