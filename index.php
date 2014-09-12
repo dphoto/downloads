@@ -95,7 +95,7 @@ class Download extends Services{
 					FROM files
 					WHERE file_id IN ($download_photos) 
 					AND user_id = $user_id
-					AND file_deleted = 0";
+					AND (!file_deleted OR file_deleted IS NULL)";
 
 		$result = $this->db->select($query);
 
