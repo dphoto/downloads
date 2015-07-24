@@ -84,26 +84,28 @@ class Delete extends Services{
 					// Put info into local vars
 					foreach( $file as $key => $value ) ${$key} = $value;
 				
-					// Double check to make sure the file is still deleted
+					// Check to ensure the file is still deleted
 					if( $file_deleted == '' ){
 						echo "About delete";
 						// File has been undeleted, so log and skip
 						$this->db->update( 'deletes', array( 'delete_status' => 'error' ), "delete_id = $delete_id");
-						break;
 
+					} else {
+						
+						// Proceed to delete files
+						$bucket = $this->getBucket( $file_backup );
+					
+						// Loop through all sizes and delete files
+						foreach( $sizes as $size ){
+							echo "Deleting $size";
+							$this->deletePhoto( $bucket, $this->getKey( $file, $size ) );
+						}
+
+						// Update deleted_files table
+						$this->db->update( 'deletes', array( 'delete_status' => 'complete' ), "delete_id = $delete_id");
+						echo "Complete $delete_id";
 					}
 
-					$bucket = $this->getBucket( $file_backup );
-				
-					// Loop through all sizes and delete files
-					foreach( $sizes as $size ){
-						echo "Deleting $size";
-						$this->deletePhoto( $bucket, $this->getKey( $file, $size ) );
-					}
-
-					// Update deleted_files table
-					$this->db->update( 'deletes', array( 'delete_status' => 'complete' ), "delete_id = $delete_id");
-					echo "Complete $dlete_id";
 				}
 				
 				
