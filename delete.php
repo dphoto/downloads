@@ -88,7 +88,7 @@ class Delete extends Services{
 					if( $file_deleted == '' ){
 						echo "About delete";
 						// File has been undeleted, so log and skip
-						$this->db->update( 'deletes', array( 'delete_status' => 'error' ), 'delete_id = $delete_id');
+						$this->db->update( 'deletes', array( 'delete_status' => 'error' ), "delete_id = $delete_id");
 						break;
 
 					}
@@ -102,7 +102,7 @@ class Delete extends Services{
 					}
 
 					// Update deleted_files table
-					$this->db->update( 'deletes', array( 'delete_status' => 'complete' ), 'delete_id = $delete_id');
+					$this->db->update( 'deletes', array( 'delete_status' => 'complete' ), "delete_id = $delete_id");
 					echo "Complete $dlete_id";
 				}
 				
