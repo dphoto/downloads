@@ -79,7 +79,7 @@ class Delete extends Services{
 					$user_id = $delete[ 'user_id' ];
 					echo "Got delete - $delete_id : $file_id : $user_id";
 					// Retrieve file info
-					$file = $this->db->select( "SELECT * FROM files WHERE file_id = $file_id AND user_id = $user_id LIMIT 1" );
+					$file = $this->db->select( "SELECT * FROM files WHERE file_id = $file_id AND user_id = $user_id LIMIT 1", 'row' );
 
 					// Put info into local vars
 					foreach( $file as $key => $value ) ${$key} = $value;
