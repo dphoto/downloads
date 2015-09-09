@@ -45,7 +45,7 @@ class Zip extends Services{
 
 		// Save to S3
 		// Update 	
-		$download = $this->db->select( "SELECT * FROM downloads WHERE download_key = '$download_id'", 'row' );
+		$download = $this->db->select( "SELECT * FROM downloads WHERE download_id = $download_id", 'row' );
 
 		if(is_array($download)){
 
@@ -79,9 +79,10 @@ class Zip extends Services{
 
 		$this->logTimer( "Got file data" );
 
-		die( "Done" );
-
 		$files = array();
+
+		$dir = "/tmp/test";
+		mkdir( $dir );
 
 		// Go through result set and build paths
 		while($file_arr = mysql_fetch_assoc($result)){
@@ -93,9 +94,10 @@ class Zip extends Services{
 			$bucket = $this->getBucket($file_backup);
 			$key = $this->getKey( $file_arr, $size, $file_resize );
 			//$file_upname = $this->getValidFilename( $file_names, $file_upname, $size == 'original' ? $file_upext : $file_ext );
-			//$file_ext = $this->getExtension($file_key);
+			$file_ext = $this->getExtension( $key );
+			$filename = $file_upname . $this->getExtension( $key );
 
-			if( $file = $this->getPhoto( $bucket, $key ) ){
+			if( $file = $this->getPhoto( $bucket, $key, $dir, $filename ) ){
 
 				// Add file to download list
 				array_push( $files, $file );	
@@ -114,19 +116,68 @@ class Zip extends Services{
 		// Create Zip archive
 		$list = implode( ' ', $files );
 		$zip = "/tmp/test.zip";
-		exec( "zip -0 $zip $list" );
+		$result = exec( "zip -0 $zip $list" );
 
-		$this->logTimer( "Created zip" );
+		$this->logTimer( "Created zip - $result" );
+
+		$filesize = filesize( $zip );
+
+		$this->logTimer( "Zip size - $filesize" );
+
+		$bucket = 'us.files.dphoto.com';
+		$key = "$user_id/downloads/test.zip";
 
 		// Send Zip to S3
-		$this->putPhoto( $zip, $bucket, '$user_id/downloads/test.zip' ) ;
+		$this->putPhoto( $zip, $bucket, $key );
 
-		$this->logTimer( "Sent zip to S3" );
+		$this->logTimer( "Sent zip to S3 $bucket $key" );
+
+		// Clean up
+		unlink( $zip );
+		foreach( $files as $file ) unlink( $file );
+		rmdir( $dir );
+
+		$this->logTimer( "Cleaned up temp files" );
 
 	}
 
 
 
+
+	protected function getPhoto($bucket, $key, $folder = '/tmp', $filename = false ) {
+		
+		// If no filename specified, create a unique one based on key
+		if( $filename === false ) $filename = time() . '-' . str_replace('/','-',$key);
+
+		$path = $folder . "/" . $filename;
+		$attempt = 0;
+		
+		while($attempt < 5){
+
+			try{
+				
+				$this->setRegion( $bucket );
+				$response = $this->s3->getObject( array( 'Bucket' => $bucket, 'Key' => $key, 'SaveAs' =>  $path) );
+
+				return $path;
+
+			} catch (S3Exception $e){
+				
+				$this->error('Get Photo', "Exception in S3 $bucket / $key : ". $e->getMessage(), 0, false);
+
+				$attempt++;	
+				sleep(2 * $attempt);
+
+			}
+
+		}
+
+		// Log error
+		$this->error('Get Photo', "Failed to retrieve $bucket/$key from S3", 0, false);
+	
+		return false;
+	
+	}	
 
 
 
