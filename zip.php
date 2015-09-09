@@ -80,8 +80,12 @@ class Zip extends Services{
 		$this->logTimer( "Got file data" );
 
 		$files = array();
+		$dir = str_replace( '.zip', '', $download_name );
+		$zip = $dir . ".zip";
 
-		$dir = "/tmp/test";
+		// Store files on the mnt drive to avoid running out 
+		// or disk space in tmp
+		chdir( "/mnt" );
 		mkdir( $dir );
 
 		// Go through result set and build paths
@@ -95,7 +99,7 @@ class Zip extends Services{
 			$key = $this->getKey( $file_arr, $size, $file_resize );
 			//$file_upname = $this->getValidFilename( $file_names, $file_upname, $size == 'original' ? $file_upext : $file_ext );
 			$file_ext = $this->getExtension( $key );
-			$filename = $file_upname . $this->getExtension( $key );
+			$filename = $file_upname . "." . $this->getExtension( $key );
 
 			if( $file = $this->getPhoto( $bucket, $key, $dir, $filename ) ){
 
@@ -106,17 +110,11 @@ class Zip extends Services{
 
 			$this->logTimer( "Got file - $file" );
 
-			// Add to list of filename already used
-			//array_push($file_names, "$file_upname.$file_upext");			
-
 		}
 		
 		$this->logTimer( "Got all files" );
 
-		// Create Zip archive
-		$list = implode( ' ', $files );
-		$zip = "/tmp/test.zip";
-		$result = exec( "zip -0 $zip $list" );
+		$result = exec( "zip -0 -r $zip $dir" );
 
 		$this->logTimer( "Created zip - $result" );
 
@@ -125,12 +123,12 @@ class Zip extends Services{
 		$this->logTimer( "Zip size - $filesize" );
 
 		$bucket = 'us.files.dphoto.com';
-		$key = "$user_id/downloads/test.zip";
+		$key = "$user_id/downloads/" . $zip;
 
 		// Send Zip to S3
 		$this->putPhoto( $zip, $bucket, $key );
 
-		$this->logTimer( "Sent zip to S3 $bucket $key" );
+		$this->logTimer( "Sent zip to S3 {$bucket}/{$key}" );
 
 		// Clean up
 		unlink( $zip );
@@ -181,6 +179,31 @@ class Zip extends Services{
 
 
 
+
+	/**
+	 *  Ensures no 2 files in a zip have the same name, by adding 
+	 *  a numeric suffix if needed.
+	 * 
+	 *  @param array $file_names list of all names currently being used
+	 *  @param string $file_upname The filename to check
+	 *  @return string
+	 */
+	function getValidFilename($file_names, $file_upname, $file_upext){
+
+		$i = 0;
+
+		$file_newname = $file_upname;
+
+		while( in_array($file_newname . ".".$file_upext, $file_names) ){
+
+			$i++;
+			$file_newname = $file_upname . "-$i";
+
+		}
+
+		return $file_newname;
+
+	}
 
 
 	function onTimeout(){
