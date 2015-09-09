@@ -79,6 +79,8 @@ class Zip extends Services{
 
 		$this->logTimer( "Got file data" );
 
+		die( "Done" );
+
 		$files = array();
 
 		// Go through result set and build paths
