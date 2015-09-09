@@ -45,7 +45,7 @@ class Zip extends Services{
 
 		// Save to S3
 		// Update 	
-		$download = $this->db->select( "SELECT * FROM downloads WHERE download_key = $download_id", 'row' );
+		$download = $this->db->select( "SELECT * FROM downloads WHERE download_key = '$download_id'", 'row' );
 
 		if(is_array($download)){
 
