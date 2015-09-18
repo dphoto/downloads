@@ -33,7 +33,7 @@ class Lifecycle extends Services{
 		parent::__construct('Lifecycle');		
 
 		// Quick fix for multi thread
-		sleep(rand(1, 200));
+		//sleep(rand(1, 200));
 
 		// Allow 10 min
 		set_time_limit(600);
