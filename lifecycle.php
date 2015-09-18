@@ -80,7 +80,7 @@ class Lifecycle extends Services{
 			));
 
 			// Confirm that the change worked
-			$iterator = $s3->getIterator( 'ListObjects', array(
+			$iterator = $this->s3->getIterator( 'ListObjects', array(
 				'Bucket' => $bucket,
 				'Prefix' => $key
 			));
