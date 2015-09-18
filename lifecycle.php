@@ -44,7 +44,7 @@ class Lifecycle extends Services{
 		$limit = isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : '1';
 		$user_id = isset( $_REQUEST['user_id'] ) ? $_REQUEST['user_id'] : '1';
 		$days = 30;
-		$files = $this->db->select( "SELECT * FROM files WHERE file_storage = 'standard' AND user_id = $user_id AND DATEDIFF(CURRENT_TIMESTAMP, file_uploaded) > $days LIMIT $limit" );
+		$files = $this->db->select( "SELECT * FROM files WHERE file_storage = 'standard' AND user_id = $user_id AND DATEDIFF(CURRENT_TIMESTAMP, file_uploaded) > $days AND file_deleted IS NULL LIMIT $limit" );
 
 		while( $file = mysql_fetch_assoc( $files )){
 
