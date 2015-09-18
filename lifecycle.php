@@ -87,19 +87,17 @@ class Lifecycle extends Services{
 
 			foreach( $iterator as $object ) {
 				if( $object['StorageClass'] === $storage ){
-					return true;
 					echo "\nSuccess";
+					return true;
 				} else {
-					return false;
 					echo "\nError : storage was not changed";
+					return false;		
 				}
 			}
 
 		} catch( S3Exception $e ){
 			echo "\nError :" . $e->getMessage();
-
 			return false;
-
 		} 
 
 
