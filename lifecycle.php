@@ -58,6 +58,9 @@ class Lifecycle extends Services{
 
 			if( $success ){
 				$this->db->update( 'files', array( 'file_storage' => strtolower($storage) ), "file_id = " . $file[ 'file_id' ] );
+			} else {
+				// TEMP set file_storage to glacier to avoid the service constantly retrying the same file
+				$this->db->update( 'files', array( 'file_storage' => 'glacier' ), "file_id = " . $file[ 'file_id' ] );
 			}
 
 		}
