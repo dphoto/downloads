@@ -96,9 +96,13 @@ class Lifecycle extends Services{
 			}
 
 		} catch( S3Exception $e ){
+			echo "\nS3Error :" . $e->getMessage();
+			return false;
+		} catch( Exception $e ){
 			echo "\nError :" . $e->getMessage();
 			return false;
 		} 
+
 
 
 	}
