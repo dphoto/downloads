@@ -210,7 +210,7 @@ class Download extends Services{
 				// Use new S3 Class
 				$s3 = $this->aws->get('s3');
 				$link = $s3->getObjectUrl($bucket, $key, '+2 days', $args);
-				$link = str_replace('.s3.amazonaws.com', '', $link);
+				//$link = str_replace('.s3.amazonaws.com', '', $link);
 
 
 			// } else {
