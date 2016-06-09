@@ -33,7 +33,7 @@ $command = $s3->getCommand('GetObject', array(
     'Key' => $key,
     'ResponseContentType' => 'image/jpeg',
     'Scheme' => 'https',
-    'ResponseContentDisposition' => 'attachment; filename="test.jpg'
+    'ResponseContentDisposition' => 'attachment; filename="test.jpg"'
 ));
 
 // Create a signed URL from the command object that will last for
@@ -41,7 +41,7 @@ $command = $s3->getCommand('GetObject', array(
 $signedUrl = $command->createPresignedUrl('+2 days');
 
 	//$url = $s3->getObjectUrl( 'us.files.dphoto.com', $key, '+2 days', $headers );
-	echo "signed :: $signedUrl";
+	echo "signed2 :: $signedUrl";
 }  catch( Exception $e ){
 	echo $e->getMessage();
 }
