@@ -13,17 +13,16 @@ use Aws\S3\Exception\S3Exception;
 @ini_set('magic_quotes_runtime', 0);
 
 
-
 class Download extends Services{
 
-	
+
 	function Download(){
-		
+
 		// Init services
-		parent::__construct('Download');				
-	
+		parent::__construct('Download');
+
 		// Bump up memory
-		ini_set('memory_limit', '1524M');		
+		ini_set('memory_limit', '1524M');
 
 		// POST variables
 		if(isset($_REQUEST['download_id'])) $download_id = urldecode( $_REQUEST['download_id'] );
@@ -62,13 +61,13 @@ class Download extends Services{
 				exit();
 
 		}
-		
-		
+
+
 		// REDIRECT NOT NEEDED NOW THAT STICKY SESSIONS ENABLED??
 
 		// For zips, redirect to IP address so session doesn't expire
 		if(stripos($download_photos, ',') !== false && $_SERVER['HTTP_HOST'] == 'download.dphoto.com'){
-			
+
 			$location = "http://" . $this->server . "/index.php?" . http_build_query($_REQUEST);
 			header( "HTTP/1.1 303 See Other" );
 			header( "Location: $location" );
@@ -76,12 +75,12 @@ class Download extends Services{
 
 
 		}
-		
-		
+
+
 
 		//if(!isset($user_id)) exit();
 		//if(!isset($file_ids)) exit();
-		//if(!isset($size)) $size = 'original';				
+		//if(!isset($size)) $size = 'original';
 
 
 		// Set for debugging
@@ -91,9 +90,9 @@ class Download extends Services{
 	//	$download_name = '';
 
 		// Get photo data
-		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id 
+		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id
 					FROM files
-					WHERE file_id IN ($download_photos) 
+					WHERE file_id IN ($download_photos)
 					AND user_id = $user_id
 					AND (!file_deleted OR file_deleted IS NULL)";
 
@@ -103,7 +102,7 @@ class Download extends Services{
 
 		// Go through result set and build paths
 		while($file_arr = mysql_fetch_assoc($result)){
-			
+
 			// Put db data into local vars
 			foreach($file_arr as $key => $value) ${$key} = $value;
 
@@ -117,30 +116,30 @@ class Download extends Services{
 			$file = array(	'bucket' 	=> $file_bucket,
 							'key' 		=> $file_key,
 							'size' 		=> $file_size,
-							'ext'		=> $file_ext,						
+							'ext'		=> $file_ext,
 							'name'		=> "$file_upname." . ( $size == 'original' ? $file_upext : $file_ext ),
 							'type'		=> 0 );
-			
-			// Ensure photo has a size				
+
+			// Ensure photo has a size
 			//if($file_size > 0){
-				
+
 				// Add file to download list
-				array_push($download_files, $file);	
+				array_push($download_files, $file);
 
 				// Add to list of filename already used
 				array_push($file_names, "$file_upname.$file_upext");
-			
+
 				// Increment the download size
-				$download_size += $file_size;			
-				
-			//}			
+				$download_size += $file_size;
+
+			//}
 
 		}
-		
+
 		//$this->error("Download Filenames", implode(',', $file_names), 0, true);
 
 		// Allow some padding
-		if($download_type == 'zip'){ 
+		if($download_type == 'zip'){
 
 			// $download_size *= 1.005;
 			$download_name .= '.zip';
@@ -151,7 +150,7 @@ class Download extends Services{
 			$download_name = $download_files[0]['name'];
 			//$download_safe = utf8_decode($download_name);
 
-		} 
+		}
 
 		$this->download_id = $download_id;//$this->db->insert("downloads", $a, true);
 		$this->download_start = microtime(true);
@@ -162,14 +161,13 @@ class Download extends Services{
 
 
 		$a = array(	'download_filesize' => $download_size,
-					'download_filename' => $download_name,
-					'xx_download_created' => 'CURRENT_TIMESTAMP');
+					'download_filename' => $download_name );
 
 		$this->db->update('downloads', $a, "download_id = $download_id");
 
 
 		// Download zip
-		if($download_type == 'zip'){ 
+		if($download_type == 'zip'){
 
 			// Allow 24 hours
 			set_time_limit(86400);
@@ -178,7 +176,7 @@ class Download extends Services{
 			register_shutdown_function(array($this, 'onTimeout'));
 
 			// Set global exception handler
-			set_exception_handler(array($this, 'onException'));			
+			set_exception_handler(array($this, 'onException'));
 
 			// Send out headers
 			$this->sendHeaders($download_name, $download_size);
@@ -189,8 +187,8 @@ class Download extends Services{
 
 		}
 
-		// Download file	
-		if($download_type == 'file'){ 
+		// Download file
+		if($download_type == 'file'){
 
 			$download_safe = $this->encodeHeader($download_name);
 			$download_mime = $this->getCtype($file_ext);
@@ -198,7 +196,7 @@ class Download extends Services{
 			$bucket = $download_files[0]['bucket'];
 			$key = $download_files[0]['key'];
 
-			$args = array(	'ResponseContentType' => $download_mime, 
+			$args = array(	'ResponseContentType' => $download_mime,
 							'ResponseContentDisposition' => "attachment; filename=$download_safe",
 							'Scheme' => 'http');
 
@@ -215,20 +213,20 @@ class Download extends Services{
 		}
 
 		// Let shoutdown function know not to worry
-		
+
 
 
 	}
-	
+
 	function sendHeaders($download_name, $download_size){
-		
+
 		// Get the ctype
 		//$ctype = $this->getCtype($download_name);
 		$download_safe = utf8_decode($download_name);
-		
+
 		// Required for IE, otherwise Content-disposition is ignored
 		if(ini_get('zlib.output_compression')) ini_set('zlib.output_compression', 'Off');
-		
+
 		// Send out headers
 		header("Pragma: public");
 		header("Expires: 0");
@@ -238,28 +236,28 @@ class Download extends Services{
 		header("Content-Disposition: attachment; filename=$download_safe" );
 		header("Content-Transfer-Encoding: binary");
 		// header("Content-Length: $download_size");
-		
-		//$download_size < 2147483648 && 
-		// Apache headers are 32bit - limiting size to 2gb. 
+
+		//$download_size < 2147483648 &&
+		// Apache headers are 32bit - limiting size to 2gb.
 		// If file is bigger, just don't send final size.
 		if($download_size > 0){
-			
+
 			//header("Content-Length: ". $download_size);
-			
+
 		}
-		
-		ob_flush();	
+
+		ob_flush();
 		flush();
-	
-		
+
+
 
 	}
-	
+
 	function getCtype($file_extension){
 
 		// Set the ctype for the download
 		switch( $file_extension ){
-				
+
 			case "pdf": $ctype="application/pdf"; break;
 			case "exe": $ctype="application/octet-stream"; break;
 			case "zip": $ctype="application/zip"; break;
@@ -270,15 +268,15 @@ class Download extends Services{
 			case "png": $ctype="image/png"; break;
 			case "jpeg": $ctype="image/jpg"; break;
 			case "jpg": $ctype="image/jpg"; break;
-			
+
 			default: $ctype="application/force-download";
-			  
+
 		}
-		
+
 		return $ctype;
-		
+
 	}
-	
+
 
 	/**
 	 * Ensures no 2 files in a zip have the same name
@@ -303,64 +301,64 @@ class Download extends Services{
 
 	}
 
-	function downloadFile($file_arr) { 
+	function downloadFile($file_arr) {
 
 		$file = $this->getPhoto($file_arr['bucket'], $file_arr['key']);
-		$size = 388608; //8mb chunks 
-		
+		$size = 388608; //8mb chunks
+
 	//	$this->error('Download', "Got file $file", null, true);
-		
+
 		if($handle = fopen($file, 'rb')) {
 
 		//	$this->error('Download', "Got file handle!!", null, true);
 
-			while (!feof($handle) && (connection_status()==0)) { 
-		
+			while (!feof($handle) && (connection_status()==0)) {
+
 				echo fread($handle, 1024*8);
-				ob_flush();			
+				ob_flush();
 				flush();
 
-			} 		
-			
+			}
+
 			fclose($handle);
-			
-		} 
-		
+
+		}
+
 		unlink($file);
 
-	} 	
+	}
 
-	function downloadZip($download_files){	
-		
+	function downloadZip($download_files){
 
-		
+
+
 		$files = 0;
 		$offset = 0;
 		$central = "";
-		
+
 
 		$zip_basedir = '';
 		$zip_overwrite = 0;
 		$zip_level = 8;
 		$zip_method = 1;
-		$zip_prepend = ''; 
+		$zip_prepend = '';
 		$zip_storepaths = 0;
 		$zip_comment = '';
-		$zip_followlinks = 0;		
+		$zip_followlinks = 0;
 
 		//$this->download_size = 0;
 
 		foreach ($download_files as $current){
-			
+
 			// Set status to the current name for dubugging
 			$this->download_status = $current['name'];
 
 			if($file = $this->getPhoto($current['bucket'], $current['key'])){
 
 				$current['size'] = filesize($file);
-				
-	
-			
+
+
+
 				if ($current['name'] == $this->download_name) continue;
 
 					$timedate = explode(" ", date("Y n j G i s", time()));
@@ -369,16 +367,16 @@ class Download extends Services{
 
 					$block = pack("VvvvV", 0x04034b50, 0x000A, 0x0000, (isset($current['method']) || $zip_method == 0) ? 0x0000 : 0x0008, $timedate);
 
-			
-			
+
+
 
 				if ($current['size'] == 0 && $current['type'] == 5){
-			
+
 					$block .= pack("VVVvv", 0x00000000, 0x00000000, 0x00000000, strlen($current['name']) + 1, 0x0000);
 					$block .= $current['name'] . "/";
-			
+
 					echo $block;
-			
+
 					$central .= pack("VvvvvVVVVvvvvvVV", 0x02014b50, 0x0014, $zip_method == 0 ? 0x0000 : 0x000A, 0x0000,
 						(isset($current['method']) || $zip_method == 0) ? 0x0000 : 0x0008, $timedate,
 						0x00000000, 0x00000000, 0x00000000, strlen($current['name']) + 1, 0x0000, 0x0000, 0x0000, 0x0000, $current['type'] == 5 ? 0x00000010 : 0x00000000, $offset);
@@ -386,14 +384,14 @@ class Download extends Services{
 					$files++;
 					$offset += (31 + strlen($current['name']));
 				}
-			
+
 				else if ($current['size'] == 0){
 					//echo "second<br>";
 					$block .= pack("VVVvv", 0x00000000, 0x00000000, 0x00000000, strlen($current['name']), 0x0000);
 					$block .= $current['name'];
-			
+
 					echo $block;
-			
+
 					$central .= pack("VvvvvVVVVvvvvvVV", 0x02014b50, 0x0014, $zip_method == 0 ? 0x0000 : 0x000A, 0x0000,
 						(isset($current['method']) || $zip_method == 0) ? 0x0000 : 0x0008, $timedate,
 						0x00000000, 0x00000000, 0x00000000, strlen($current['name']), 0x0000, 0x0000, 0x0000, 0x0000, $current['type'] == 5 ? 0x00000010 : 0x00000000, $offset);
@@ -401,11 +399,11 @@ class Download extends Services{
 					$files++;
 					$offset += (30 + strlen($current['name']));
 				}
-			
+
 				else if ($fp = fopen($file, "rb")){
 
 					$temp = '';
-					$chunksize = 8388608;// 8mb chunks 
+					$chunksize = 8388608;// 8mb chunks
 
 					while (!feof($fp)) $temp .= fread($fp, $chunksize);
 
@@ -421,18 +419,18 @@ class Download extends Services{
 						$temp = substr($temp, 2, $size);
 					}
 					else {
-	
+
 						$size = strlen($temp);
 
 					}
-			
+
 
 					$block .= pack("VVVvv", $crc32, $size, $current['size'], strlen($current['name']), 0x0000);
 					$block .= $current['name'];
-			
+
 					echo $block;
-					
-	
+
+
 					echo $temp;
 
 
@@ -442,46 +440,46 @@ class Download extends Services{
 					$central .= $current['name'];
 					$files++;
 					$offset += (30 + strlen($current['name']) + $size);
-				
+
 					unset($temp);
-						
-				
+
+
 				}
-		
-				unlink($file);	
-				
-			}	
+
+				unlink($file);
+
+			}
 
 		}
 
 		echo $central;
-		
+
 	//	$this->download_size += strlen($central);
 
-		$pack = pack("VvvvvVVv", 0x06054b50, 0x0000, 0x0000, $files, $files, strlen($central), $offset,!empty ($zip_comment) ? strlen($zip_comment) : 0x0000);	
+		$pack = pack("VvvvvVVv", 0x06054b50, 0x0000, 0x0000, $files, $files, strlen($central), $offset,!empty ($zip_comment) ? strlen($zip_comment) : 0x0000);
 
 		echo $pack;
-		
+
 	//	$this->download_size += strlen($pack);
 
 		return 1;
-	}	
+	}
 
 
 	private function cleanEncoding($s){
-		
+
 		return mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "UTF-8" ? $s : utf8_encode($s);
-		
+
 	}
 
 
 	private function encodeISO($s){
-		
+
 		if( mb_detect_encoding($s . 'a' , "UTF-8, ISO-8859-1") == "ISO-8859-1" ){
 
 			$this->db->error("Encode", "$s is ISO", 0, true);
 
-			return $s; 
+			return $s;
 
 		} else {
 
@@ -490,48 +488,48 @@ class Download extends Services{
 			return utf8_decode($s);
 
 		}
-		
+
 	}
 
 	private function encodeHeader($s){
-		
+
 		$s = rawurlencode($s);
 		$s = str_replace('%28', '(', $s);
 		$s = str_replace('%29', ')', $s);
 
-		return $s;	
+		return $s;
 
 	}
 
 	function onTimeout(){
-		
+
 		// Determine connection status
 		$connection = connection_status();
-		
-		
-			
-		// Look for timeout or abort	
+
+
+
+		// Look for timeout or abort
 		if($connection != 0 || $this->download_complete == false){
-					
+
 			// Determine duration
 			$this->download_duration = microtime(true) - $this->download_start;
 
 			// Log this
 			$this->error('Script Timeout', "Script timeout while downloading $this->download_id\n\nDuration: $this->download_duration\n\nStatus: $this->download_status\n\nConnection: $connection\n\nComplete: $this->download_complete", 0, false);
-		
+
 		} else {
-			
+
 			// Update DB to show completed
-			$this->db->update('downloads', array('xx_download_completed' => 'CURRENT_TIMESTAMP'), "download_id = $this->download_id");
+			//$this->db->update('downloads', array('xx_download_completed' => 'CURRENT_TIMESTAMP'), "download_id = $this->download_id");
 
 		}
 
 		// Terminate db connect
-		$this->db->close();		
+		$this->db->close();
 
 	}
 
-	
+
 	function onException($e) {
 
 
@@ -543,7 +541,7 @@ class Download extends Services{
 
 
 		// Terminate db connect
-		$this->db->close();	
+		$this->db->close();
 
 
 	}
@@ -552,9 +550,9 @@ class Download extends Services{
 
 
 
-	
+
 }
-	
+
 
 new Download();
 
