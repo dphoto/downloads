@@ -340,7 +340,7 @@ class Download extends Services{
 		$zip_basedir = '';
 		$zip_overwrite = 0;
 		$zip_level = 8;
-		$zip_method = 1;
+		$zip_method = 0;
 		$zip_prepend = '';
 		$zip_storepaths = 0;
 		$zip_comment = '';
