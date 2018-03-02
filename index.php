@@ -90,7 +90,7 @@ class Download extends Services{
 	//	$download_name = '';
 
 		// Get photo data
-		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, file_backup, user_id
+		$query = "	SELECT file_id, file_key, file_code, file_ext, file_upname, file_upext, file_size, file_resize, '1' AS file_backup, user_id
 					FROM files
 					WHERE file_id IN ($download_photos)
 					AND user_id = $user_id
