@@ -12,6 +12,9 @@ use Aws\S3\Exception\S3Exception;
 
 @ini_set('magic_quotes_runtime', 0);
 
+// Exit quickly when no id supplied
+if( !isset($_REQUEST['download_id']) ) exit;
+
 
 class Download extends Services{
 
@@ -26,6 +29,8 @@ class Download extends Services{
 
 		// POST variables
 		if(isset($_REQUEST['download_id'])) $download_id = urldecode( $_REQUEST['download_id'] );
+
+
 		//if(isset($_REQUEST['download_key'])) $download_key = $_REQUEST['download_key'];
 
 		$download_key = $this->db->validate( substr($download_id, stripos($download_id, '-') + 1), true );
